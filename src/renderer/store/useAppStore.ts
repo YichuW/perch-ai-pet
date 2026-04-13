@@ -1,83 +1,86 @@
 import { create } from 'zustand';
 
-type PetEmotion = 'happy' | 'eat' | 'play';
-type Gender = 'male' | 'female' | 'other' | 'prefer_not_to_say';
+export type Screen = 'welcome' | 'username' | 'activeTime' | 'petHome';
+export type PetEmotion = 'happy' | 'eat' | 'play';
 
 interface AppState {
-  petVisible: boolean;
-  petState: PetEmotion;
-  message: string;
+  currentScreen: Screen;
 
   profile: {
     name: string;
-    gender: Gender;
-    freeTime: string;
-    reminders: {
-      hydration: boolean;
-      stretching: boolean;
-      meetings: boolean;
-    };
+    activeTime: string;
   };
 
-  settings: {
-    reminderEnabled: boolean;
-    dataCollectionEnabled: boolean;
-  };
-
-  onboardingOpen: boolean;
-  settingsOpen: boolean;
-
-  setPetUpdate: (data: {
+  pet: {
     visible: boolean;
     emotion: PetEmotion;
-    speak?: string;
-  }) => void;
+    message: string;
+  };
 
-  setProfile: (profile: AppState['profile']) => void;
-  setSettings: (settings: AppState['settings']) => void;
-
-  openOnboarding: () => void;
-  closeOnboarding: () => void;
-  openSettings: () => void;
-  closeSettings: () => void;
+  setScreen: (screen: Screen) => void;
+  setName: (name: string) => void;
+  setActiveTime: (activeTime: string) => void;
+  setPetMessage: (message: string) => void;
+  setPetEmotion: (emotion: PetEmotion) => void;
+  finishOnboarding: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  petVisible: true,
-  petState: 'happy',
-  message: '你好呀～',
+  currentScreen: 'welcome',
 
   profile: {
     name: '',
-    gender: 'prefer_not_to_say',
-    freeTime: '',
-    reminders: {
-      hydration: true,
-      stretching: true,
-      meetings: true,
-    },
+    activeTime: '',
   },
 
-  settings: {
-    reminderEnabled: true,
-    dataCollectionEnabled: true,
+  pet: {
+    visible: true,
+    emotion: 'happy',
+    message: 'Hi! I am Perch~',
   },
 
-  onboardingOpen: false,
-  settingsOpen: false,
+  setScreen: (screen) => set({ currentScreen: screen }),
 
-  setPetUpdate: (data) =>
-    set({
-      petVisible: data.visible,
-      petState: data.emotion,
-      message: data.speak ?? '',
-    }),
+  setName: (name) =>
+    set((state) => ({
+      profile: {
+        ...state.profile,
+        name,
+      },
+    })),
 
-  setProfile: (profile) => set({ profile }),
-  setSettings: (settings) => set({ settings }),
+  setActiveTime: (activeTime) =>
+    set((state) => ({
+      profile: {
+        ...state.profile,
+        activeTime,
+      },
+    })),
 
-  openOnboarding: () => set({ onboardingOpen: true }),
-  closeOnboarding: () => set({ onboardingOpen: false }),
-  openSettings: () => set({ settingsOpen: true }),
-  closeSettings: () => set({ settingsOpen: false }),
+  setPetMessage: (message) =>
+    set((state) => ({
+      pet: {
+        ...state.pet,
+        message,
+      },
+    })),
+
+  setPetEmotion: (emotion) =>
+    set((state) => ({
+      pet: {
+        ...state.pet,
+        emotion,
+      },
+    })),
+
+  finishOnboarding: () =>
+    set((state) => ({
+      currentScreen: 'petHome',
+      pet: {
+        ...state.pet,
+        message: state.profile.name
+          ? `Hi ${state.profile.name}! I'm ready to keep you company.`
+          : 'Hi! I am ready to keep you company.',
+      },
+    })),
 }));

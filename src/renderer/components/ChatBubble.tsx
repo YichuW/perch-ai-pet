@@ -1,5 +1,14 @@
-export default function ChatBubble({ visible, text }: any) {
-  if (!visible) return null;
+interface ChatBubbleProps {
+  text: string;
+}
 
-  return <div className="chat-bubble">{text}</div>;
+export default function ChatBubble({ text }: ChatBubbleProps) {
+  if (!text) return null;
+
+  return (
+    <div className="chat-bubble">
+      <div className="chat-text">{text}</div>
+      <div className="chat-tail" />
+    </div>
+  );
 }
