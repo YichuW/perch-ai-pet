@@ -1,11 +1,23 @@
 import { useAppStore } from '../store/useAppStore';
 import ChatBubble from './ChatBubble';
 
+import happyCat from '../../assets/pet/cat_idle.png';
+import eatCat from '../../assets/pet/cat_eat.png';
+import playCat from '../../assets/pet/cat_play.png';
+
+const petImages = {
+  happy: happyCat,
+  eat: eatCat,
+  play: playCat,
+};
+
 export default function PetScreen() {
   const { name, activeTime } = useAppStore((s) => s.profile);
   const pet = useAppStore((s) => s.pet);
   const setPetMessage = useAppStore((s) => s.setPetMessage);
   const setPetEmotion = useAppStore((s) => s.setPetEmotion);
+
+  const currentPetImage = petImages[pet.emotion] || happyCat;
 
   const handleStretch = () => {
     setPetEmotion('play');
@@ -34,15 +46,11 @@ export default function PetScreen() {
 
       <div className="pet-center-area">
         <div className={`pet-avatar pet-${pet.emotion}`}>
-          <div className="cat-face small">
-            <div className="cat-ear left-ear" />
-            <div className="cat-ear right-ear" />
-            <div className="cat-eyes">
-              <span />
-              <span />
-            </div>
-            <div className="cat-mouth">﹀</div>
-          </div>
+          <img
+            src={currentPetImage}
+            alt={`pet-${pet.emotion}`}
+            className="pet-image"
+          />
         </div>
       </div>
 

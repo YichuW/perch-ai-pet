@@ -326,6 +326,19 @@ input {
   top: 76px;
 }
 
+.pet-image {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+.pet-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 640px) {
   .title {
     font-size: 27px;
