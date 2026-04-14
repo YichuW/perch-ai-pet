@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import ChatBubble from './ChatBubble';
 
@@ -14,8 +15,14 @@ const petImages = {
 export default function PetScreen() {
   const { name, activeTime } = useAppStore((s) => s.profile);
   const pet = useAppStore((s) => s.pet);
+  const focusMode = useAppStore((s) => s.settings.focusMode);
   const setPetMessage = useAppStore((s) => s.setPetMessage);
   const setPetEmotion = useAppStore((s) => s.setPetEmotion);
+  const toggleFocusMode = useAppStore((s) => s.toggleFocusMode);
+  const setScreen = useAppStore((s) => s.setScreen);
+
+  const [userInput, setUserInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const currentPetImage = petImages[pet.emotion] || happyCat;
 
@@ -38,10 +45,34 @@ export default function PetScreen() {
     );
   };
 
+  const handleSendMessage = async () => {
+    const message = userInput.trim();
+    if (!message || isLoading) return;
+
+    setUserInput('');
+    setIsLoading(true);
+    setPetMessage('...');
+
+    try {
+      await window.electronAPI?.sendPetInteraction({
+        type: 'userMessage',
+        message,
+      });
+    } catch {
+      setPetMessage("Hmm, I couldn't think of what to say.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDismiss = () => {
+    setPetMessage('');
+  };
+
   return (
     <div className="pet-screen">
       <div className="pet-top-area">
-        <ChatBubble text={pet.message} />
+        <ChatBubble text={pet.message} onDismiss={pet.message ? handleDismiss : undefined} />
       </div>
 
       <div className="pet-center-area">
@@ -54,6 +85,24 @@ export default function PetScreen() {
         </div>
       </div>
 
+      <div className="chat-input-area">
+        <input
+          className="chat-text-input"
+          placeholder="Talk to Perch..."
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+          disabled={isLoading}
+        />
+        <button
+          className="send-button"
+          onClick={handleSendMessage}
+          disabled={!userInput.trim() || isLoading}
+        >
+          Send
+        </button>
+      </div>
+
       <div className="pet-action-bar">
         <button className="secondary-button" onClick={handleHello}>
           Say Hi
@@ -62,7 +111,16 @@ export default function PetScreen() {
           Feed
         </button>
         <button className="secondary-button" onClick={handleStretch}>
-          Stretch Reminder
+          Stretch
+        </button>
+        <button
+          className={`secondary-button ${focusMode ? 'active' : ''}`}
+          onClick={toggleFocusMode}
+        >
+          {focusMode ? 'Focus: ON' : 'Focus: OFF'}
+        </button>
+        <button className="secondary-button" onClick={() => setScreen('settings')}>
+          Settings
         </button>
       </div>
     </div>

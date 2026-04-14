@@ -339,6 +339,67 @@ input {
   justify-content: center;
 }
 
+/* Chat input */
+.chat-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 12px;
+}
+
+.chat-text-input {
+  flex: 1;
+  border: 1.5px solid #e8bfd0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.4);
+  color: var(--purple);
+}
+
+.chat-text-input::placeholder {
+  color: #9f95b3;
+}
+
+.send-button {
+  border: none;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--purple);
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.send-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Dismiss button on chat bubble */
+.chat-dismiss {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+}
+
+.chat-dismiss:hover {
+  color: var(--purple);
+}
+
+/* Focus mode active state */
+.secondary-button.active {
+  background: var(--pink);
+}
+
 @media (max-width: 640px) {
   .title {
     font-size: 27px;
