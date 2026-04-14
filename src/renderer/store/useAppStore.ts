@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export type Screen = 'welcome' | 'username' | 'activeTime' | 'petHome' | 'settings';
 export type PetEmotion = 'happy' | 'eat' | 'play';
+export type ChatState = 'idle' | 'catInitiated' | 'userReplied' | 'catResponded';
 
 interface AppState {
   currentScreen: Screen;
@@ -22,12 +23,16 @@ interface AppState {
     focusMode: boolean;
   };
 
+  chatState: ChatState;
+
   setScreen: (screen: Screen) => void;
   setName: (name: string) => void;
   setActiveTime: (activeTime: string) => void;
   setPetMessage: (message: string) => void;
   setPetEmotion: (emotion: PetEmotion) => void;
   finishOnboarding: () => void;
+  setChatState: (chatState: ChatState) => void;
+  dismissChat: () => void;
   setSettings: (settings: { apiKey: string; focusMode: boolean }) => void;
   setApiKey: (apiKey: string) => void;
   toggleFocusMode: () => void;
@@ -51,6 +56,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     apiKey: '',
     focusMode: false,
   },
+
+  chatState: 'idle',
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -95,6 +102,14 @@ export const useAppStore = create<AppState>((set, get) => ({
           ? `Hi ${state.profile.name}! I'm ready to keep you company.`
           : 'Hi! I am ready to keep you company.',
       },
+    })),
+
+  setChatState: (chatState) => set({ chatState }),
+
+  dismissChat: () =>
+    set((state) => ({
+      chatState: 'idle' as const,
+      pet: { ...state.pet, message: '' },
     })),
 
   setSettings: (settings) => set({ settings }),

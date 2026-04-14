@@ -8,12 +8,13 @@ let mainWindow
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 420,
+    width: 320,
     height: 420,
     frame: false,
     transparent: true,
     alwaysOnTop: true,
     resizable: false,
+    hasShadow: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -85,6 +86,16 @@ async function handleTrigger(trigger) {
     speak: message,
   })
 }
+
+// Demo: simulate a 60-min work reminder on demand
+ipcMain.handle('demo-trigger', async () => {
+  await handleTrigger({
+    type: 'workDuration',
+    consecutiveMinutes: 60,
+    appName: 'Code',
+  })
+  return { ok: true }
+})
 
 app.whenReady().then(() => {
   initPersistence(app.getPath('userData'))

@@ -14,6 +14,7 @@ export default function App() {
   const setSettings = useAppStore((s) => s.setSettings);
   const setPetMessage = useAppStore((s) => s.setPetMessage);
   const setPetEmotion = useAppStore((s) => s.setPetEmotion);
+  const setChatState = useAppStore((s) => s.setChatState);
 
   useEffect(() => {
     const api = window.electronAPI;
@@ -36,6 +37,13 @@ export default function App() {
     api.onPetUpdate((data) => {
       if (data.speak) setPetMessage(data.speak);
       if (data.emotion) setPetEmotion(data.emotion);
+
+      const currentChatState = useAppStore.getState().chatState;
+      if (currentChatState === 'userReplied') {
+        setChatState('catResponded');
+      } else if (currentChatState === 'idle') {
+        setChatState('catInitiated');
+      }
     });
 
     api.sendAppReady();

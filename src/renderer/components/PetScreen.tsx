@@ -13,18 +13,22 @@ const petImages = {
 };
 
 export default function PetScreen() {
+  const [isHovered, setIsHovered] = useState(false);
+  const [userInput, setUserInput] = useState('');
+
   const { name, activeTime } = useAppStore((s) => s.profile);
   const pet = useAppStore((s) => s.pet);
+  const chatState = useAppStore((s) => s.chatState);
   const focusMode = useAppStore((s) => s.settings.focusMode);
   const setPetMessage = useAppStore((s) => s.setPetMessage);
   const setPetEmotion = useAppStore((s) => s.setPetEmotion);
+  const setChatState = useAppStore((s) => s.setChatState);
+  const dismissChat = useAppStore((s) => s.dismissChat);
   const toggleFocusMode = useAppStore((s) => s.toggleFocusMode);
   const setScreen = useAppStore((s) => s.setScreen);
 
-  const [userInput, setUserInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
   const currentPetImage = petImages[pet.emotion] || happyCat;
+  const conversationActive = chatState !== 'idle';
 
   const handleStretch = () => {
     setPetEmotion('play');
@@ -45,12 +49,12 @@ export default function PetScreen() {
     );
   };
 
-  const handleSendMessage = async () => {
+  const handleSendReply = async () => {
     const message = userInput.trim();
-    if (!message || isLoading) return;
+    if (!message) return;
 
     setUserInput('');
-    setIsLoading(true);
+    setChatState('userReplied');
     setPetMessage('...');
 
     try {
@@ -60,68 +64,91 @@ export default function PetScreen() {
       });
     } catch {
       setPetMessage("Hmm, I couldn't think of what to say.");
-    } finally {
-      setIsLoading(false);
+      setChatState('catResponded');
     }
   };
 
   const handleDismiss = () => {
-    setPetMessage('');
+    dismissChat();
   };
+
+  // Bubble visibility: show on hover (for quick actions) OR force-show during conversation
+  const bubbleVisible = conversationActive || (isHovered && pet.message);
+  // Input visibility: only during catInitiated
+  const showInput = chatState === 'catInitiated';
+  // Buttons visibility: hover only, hidden during active conversation
+  const buttonsVisible = isHovered && !conversationActive;
 
   return (
     <div className="pet-screen">
-      <div className="pet-top-area">
-        <ChatBubble text={pet.message} onDismiss={pet.message ? handleDismiss : undefined} />
-      </div>
-
-      <div className="pet-center-area">
-        <div className={`pet-avatar pet-${pet.emotion}`}>
-          <img
-            src={currentPetImage}
-            alt={`pet-${pet.emotion}`}
-            className="pet-image"
+      <div
+        className="pet-hover-zone"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className={`pet-top-area no-drag ${bubbleVisible ? 'visible' : 'hidden'}`}>
+          <ChatBubble
+            text={pet.message}
+            onDismiss={conversationActive ? handleDismiss : undefined}
           />
         </div>
-      </div>
 
-      <div className="chat-input-area">
-        <input
-          className="chat-text-input"
-          placeholder="Talk to Perch..."
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-          disabled={isLoading}
-        />
-        <button
-          className="send-button"
-          onClick={handleSendMessage}
-          disabled={!userInput.trim() || isLoading}
-        >
-          Send
-        </button>
-      </div>
+        <div className="pet-center-area">
+          <div className="drag-region pet-drag-area">
+            <div className={`pet-avatar pet-${pet.emotion}`}>
+              <img
+                src={currentPetImage}
+                alt={`pet-${pet.emotion}`}
+                className="pet-image"
+                draggable={false}
+              />
+            </div>
+          </div>
+        </div>
 
-      <div className="pet-action-bar">
-        <button className="secondary-button" onClick={handleHello}>
-          Say Hi
-        </button>
-        <button className="secondary-button" onClick={handleFeed}>
-          Feed
-        </button>
-        <button className="secondary-button" onClick={handleStretch}>
-          Stretch
-        </button>
-        <button
-          className={`secondary-button ${focusMode ? 'active' : ''}`}
-          onClick={toggleFocusMode}
-        >
-          {focusMode ? 'Focus: ON' : 'Focus: OFF'}
-        </button>
-        <button className="secondary-button" onClick={() => setScreen('settings')}>
-          Settings
-        </button>
+        {showInput && (
+          <div className="chat-input-area no-drag">
+            <input
+              className="chat-text-input"
+              placeholder="Reply to Perch..."
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendReply()}
+              autoFocus
+            />
+            <button
+              className="send-button"
+              onClick={handleSendReply}
+              disabled={!userInput.trim()}
+            >
+              Send
+            </button>
+          </div>
+        )}
+
+        <div className={`pet-action-bar no-drag ${buttonsVisible ? 'visible' : 'hidden'}`}>
+          <button className="secondary-button" onClick={handleHello}>
+            Say Hi
+          </button>
+          <button className="secondary-button" onClick={handleFeed}>
+            Feed
+          </button>
+          <button className="secondary-button" onClick={handleStretch}>
+            Stretch
+          </button>
+          <button
+            className={`secondary-button ${focusMode ? 'active' : ''}`}
+            onClick={toggleFocusMode}
+          >
+            {focusMode ? 'Focus: ON' : 'Focus: OFF'}
+          </button>
+          <button className="secondary-button" onClick={() => setScreen('settings')}>
+            Settings
+          </button>
+          <button className="secondary-button" onClick={() => window.electronAPI?.demoTrigger()}>
+            Demo
+          </button>
+        </div>
       </div>
     </div>
   );
