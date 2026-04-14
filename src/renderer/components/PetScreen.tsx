@@ -40,21 +40,24 @@ export default function PetScreen() {
 
   return (
     <div className="pet-screen">
-      <div className="pet-top-area">
+      <div className="pet-top-area no-drag">
         <ChatBubble text={pet.message} />
       </div>
 
       <div className="pet-center-area">
-        <div className={`pet-avatar pet-${pet.emotion}`}>
-          <img
-            src={currentPetImage}
-            alt={`pet-${pet.emotion}`}
-            className="pet-image"
-          />
+        <div className="drag-region pet-drag-area">
+          <div className={`pet-avatar pet-${pet.emotion}`}>
+            <img
+              src={currentPetImage}
+              alt={`pet-${pet.emotion}`}
+              className="pet-image"
+              draggable={false}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="pet-action-bar">
+      <div className="pet-action-bar no-drag">
         <button className="secondary-button" onClick={handleHello}>
           Say Hi
         </button>
