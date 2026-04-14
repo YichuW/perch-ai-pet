@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type Screen = 'welcome' | 'username' | 'activeTime' | 'petHome';
+export type Screen = 'welcome' | 'username' | 'activeTime' | 'petHome' | 'settings';
 export type PetEmotion = 'happy' | 'eat' | 'play';
 
 interface AppState {
@@ -17,15 +17,23 @@ interface AppState {
     message: string;
   };
 
+  settings: {
+    apiKey: string;
+    focusMode: boolean;
+  };
+
   setScreen: (screen: Screen) => void;
   setName: (name: string) => void;
   setActiveTime: (activeTime: string) => void;
   setPetMessage: (message: string) => void;
   setPetEmotion: (emotion: PetEmotion) => void;
   finishOnboarding: () => void;
+  setSettings: (settings: { apiKey: string; focusMode: boolean }) => void;
+  setApiKey: (apiKey: string) => void;
+  toggleFocusMode: () => void;
 }
 
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create<AppState>((set, get) => ({
   currentScreen: 'welcome',
 
   profile: {
@@ -37,6 +45,11 @@ export const useAppStore = create<AppState>((set) => ({
     visible: true,
     emotion: 'happy',
     message: 'Hi! I am Perch~',
+  },
+
+  settings: {
+    apiKey: '',
+    focusMode: false,
   },
 
   setScreen: (screen) => set({ currentScreen: screen }),
@@ -83,4 +96,18 @@ export const useAppStore = create<AppState>((set) => ({
           : 'Hi! I am ready to keep you company.',
       },
     })),
+
+  setSettings: (settings) => set({ settings }),
+
+  setApiKey: (apiKey) => {
+    const settings = { ...get().settings, apiKey };
+    set({ settings });
+    window.electronAPI?.saveSettings(settings);
+  },
+
+  toggleFocusMode: () => {
+    const settings = { ...get().settings, focusMode: !get().settings.focusMode };
+    set({ settings });
+    window.electronAPI?.saveSettings(settings);
+  },
 }));

@@ -21,13 +21,7 @@ export default function ActiveTimeScreen() {
     if (window.electronAPI?.saveProfile) {
       window.electronAPI.saveProfile({
         name: useAppStore.getState().profile.name,
-        gender: 'prefer_not_to_say',
-        freeTime: selected,
-        reminders: {
-          hydration: true,
-          stretching: true,
-          meetings: true,
-        },
+        activeTime: selected,
       });
     }
 
