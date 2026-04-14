@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import ChatBubble from './ChatBubble';
 
@@ -12,6 +13,8 @@ const petImages = {
 };
 
 export default function PetScreen() {
+  const [isHovered, setIsHovered] = useState(false);
+
   const { name, activeTime } = useAppStore((s) => s.profile);
   const pet = useAppStore((s) => s.pet);
   const setPetMessage = useAppStore((s) => s.setPetMessage);
@@ -40,33 +43,39 @@ export default function PetScreen() {
 
   return (
     <div className="pet-screen">
-      <div className="pet-top-area no-drag">
-        <ChatBubble text={pet.message} />
-      </div>
+      <div
+        className="pet-hover-zone"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className={`pet-top-area no-drag ${isHovered ? 'visible' : 'hidden'}`}>
+          <ChatBubble text={pet.message} />
+        </div>
 
-      <div className="pet-center-area">
-        <div className="drag-region pet-drag-area">
-          <div className={`pet-avatar pet-${pet.emotion}`}>
-            <img
-              src={currentPetImage}
-              alt={`pet-${pet.emotion}`}
-              className="pet-image"
-              draggable={false}
-            />
+        <div className="pet-center-area">
+          <div className="drag-region pet-drag-area">
+            <div className={`pet-avatar pet-${pet.emotion}`}>
+              <img
+                src={currentPetImage}
+                alt={`pet-${pet.emotion}`}
+                className="pet-image"
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="pet-action-bar no-drag">
-        <button className="secondary-button" onClick={handleHello}>
-          Say Hi
-        </button>
-        <button className="secondary-button" onClick={handleFeed}>
-          Feed
-        </button>
-        <button className="secondary-button" onClick={handleStretch}>
-          Stretch Reminder
-        </button>
+        <div className={`pet-action-bar no-drag ${isHovered ? 'visible' : 'hidden'}`}>
+          <button className="secondary-button" onClick={handleHello}>
+            Say Hi
+          </button>
+          <button className="secondary-button" onClick={handleFeed}>
+            Feed
+          </button>
+          <button className="secondary-button" onClick={handleStretch}>
+            Stretch Reminder
+          </button>
+        </div>
       </div>
     </div>
   );
