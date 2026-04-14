@@ -14,13 +14,21 @@ const petImages = {
 
 export default function PetScreen() {
   const [isHovered, setIsHovered] = useState(false);
+  const [userInput, setUserInput] = useState('');
 
   const { name, activeTime } = useAppStore((s) => s.profile);
   const pet = useAppStore((s) => s.pet);
+  const chatState = useAppStore((s) => s.chatState);
+  const focusMode = useAppStore((s) => s.settings.focusMode);
   const setPetMessage = useAppStore((s) => s.setPetMessage);
   const setPetEmotion = useAppStore((s) => s.setPetEmotion);
+  const setChatState = useAppStore((s) => s.setChatState);
+  const dismissChat = useAppStore((s) => s.dismissChat);
+  const toggleFocusMode = useAppStore((s) => s.toggleFocusMode);
+  const setScreen = useAppStore((s) => s.setScreen);
 
   const currentPetImage = petImages[pet.emotion] || happyCat;
+  const conversationActive = chatState !== 'idle';
 
   const handleStretch = () => {
     setPetEmotion('play');
@@ -41,6 +49,36 @@ export default function PetScreen() {
     );
   };
 
+  const handleSendReply = async () => {
+    const message = userInput.trim();
+    if (!message) return;
+
+    setUserInput('');
+    setChatState('userReplied');
+    setPetMessage('...');
+
+    try {
+      await window.electronAPI?.sendPetInteraction({
+        type: 'userMessage',
+        message,
+      });
+    } catch {
+      setPetMessage("Hmm, I couldn't think of what to say.");
+      setChatState('catResponded');
+    }
+  };
+
+  const handleDismiss = () => {
+    dismissChat();
+  };
+
+  // Bubble visibility: show on hover (for quick actions) OR force-show during conversation
+  const bubbleVisible = conversationActive || (isHovered && pet.message);
+  // Input visibility: only during catInitiated
+  const showInput = chatState === 'catInitiated';
+  // Buttons visibility: hover only, hidden during active conversation
+  const buttonsVisible = isHovered && !conversationActive;
+
   return (
     <div className="pet-screen">
       <div
@@ -48,8 +86,11 @@ export default function PetScreen() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className={`pet-top-area no-drag ${isHovered ? 'visible' : 'hidden'}`}>
-          <ChatBubble text={pet.message} />
+        <div className={`pet-top-area no-drag ${bubbleVisible ? 'visible' : 'hidden'}`}>
+          <ChatBubble
+            text={pet.message}
+            onDismiss={conversationActive ? handleDismiss : undefined}
+          />
         </div>
 
         <div className="pet-center-area">
@@ -65,7 +106,27 @@ export default function PetScreen() {
           </div>
         </div>
 
-        <div className={`pet-action-bar no-drag ${isHovered ? 'visible' : 'hidden'}`}>
+        {showInput && (
+          <div className="chat-input-area no-drag">
+            <input
+              className="chat-text-input"
+              placeholder="Reply to Perch..."
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendReply()}
+              autoFocus
+            />
+            <button
+              className="send-button"
+              onClick={handleSendReply}
+              disabled={!userInput.trim()}
+            >
+              Send
+            </button>
+          </div>
+        )}
+
+        <div className={`pet-action-bar no-drag ${buttonsVisible ? 'visible' : 'hidden'}`}>
           <button className="secondary-button" onClick={handleHello}>
             Say Hi
           </button>
@@ -73,7 +134,19 @@ export default function PetScreen() {
             Feed
           </button>
           <button className="secondary-button" onClick={handleStretch}>
-            Stretch Reminder
+            Stretch
+          </button>
+          <button
+            className={`secondary-button ${focusMode ? 'active' : ''}`}
+            onClick={toggleFocusMode}
+          >
+            {focusMode ? 'Focus: ON' : 'Focus: OFF'}
+          </button>
+          <button className="secondary-button" onClick={() => setScreen('settings')}>
+            Settings
+          </button>
+          <button className="secondary-button" onClick={() => window.electronAPI?.demoTrigger()}>
+            Demo
           </button>
         </div>
       </div>

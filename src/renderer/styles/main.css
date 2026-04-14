@@ -108,7 +108,6 @@ input {
   cursor: not-allowed;
 }
 
-/* welcome 页那只粉球猫还在用，所以保留并缩小 */
 .cat-face {
   position: relative;
   width: 108px;
@@ -285,6 +284,8 @@ input {
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
+/* ---------- hover show/hide ---------- */
+
 .visible {
   opacity: 1;
   transform: translateY(0);
@@ -297,6 +298,8 @@ input {
   pointer-events: none;
 }
 
+/* ---------- buttons ---------- */
+
 .secondary-button {
   border: none;
   border-radius: 999px;
@@ -308,6 +311,12 @@ input {
   cursor: pointer;
   min-width: 104px;
 }
+
+.secondary-button.active {
+  background: var(--pink);
+}
+
+/* ---------- chat bubble ---------- */
 
 .chat-bubble {
   position: relative;
@@ -339,6 +348,64 @@ input {
   rotate: 45deg;
 }
 
+.chat-dismiss {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+}
+
+.chat-dismiss:hover {
+  color: var(--purple);
+}
+
+/* ---------- chat input ---------- */
+
+.chat-input-area {
+  display: flex;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.chat-text-input {
+  flex: 1;
+  border: 1.5px solid #e8bfd0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.45);
+  color: var(--purple);
+}
+
+.chat-text-input::placeholder {
+  color: #9f95b3;
+}
+
+.send-button {
+  border: none;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--purple);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.send-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---------- pet avatar & drag ---------- */
+
 .pet-avatar {
   display: flex;
   align-items: center;
@@ -355,7 +422,6 @@ input {
   pointer-events: none;
 }
 
-/* 可拖拽区域 */
 .drag-region {
   -webkit-app-region: drag;
   display: flex;
