@@ -1,47 +1,36 @@
-import { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 
 export default function SettingsScreen() {
   const setScreen = useAppStore((s) => s.setScreen);
-  const setApiKey = useAppStore((s) => s.setApiKey);
-  const savedKey = useAppStore((s) => s.settings.apiKey);
-
-  const [keyInput, setKeyInput] = useState(savedKey);
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = () => {
-    setApiKey(keyInput.trim());
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
 
   return (
     <div className="screen form-screen">
       <div className="form-card">
-        <h2 className="form-title">Settings</h2>
-        <p className="form-subtitle">Configure your Perch companion</p>
+        <h2 className="form-title">About Perch</h2>
+        <p className="form-subtitle">Your privacy matters to us</p>
 
-        <label className="input-label">Anthropic API Key</label>
-        <input
-          className="text-input"
-          type="password"
-          placeholder="sk-ant-..."
-          value={keyInput}
-          onChange={(e) => setKeyInput(e.target.value)}
-        />
+        <div className="privacy-section">
+          <h3 className="privacy-heading">What Perch knows</h3>
+          <ul className="privacy-list">
+            <li>Your current topmost app (e.g. "VS Code", "Word")</li>
+            <li>How long you've been using it</li>
+            <li>Your name and preferred active hours</li>
+          </ul>
+        </div>
 
-        <button
-          className="primary-button"
-          onClick={handleSave}
-          style={{ marginBottom: 12 }}
-        >
-          {saved ? 'Saved!' : 'Save'}
-        </button>
+        <div className="privacy-section">
+          <h3 className="privacy-heading">What Perch does NOT know</h3>
+          <ul className="privacy-list">
+            <li>Your keystrokes or what you type</li>
+            <li>The contents of any app or file</li>
+            <li>Any other information on your laptop</li>
+          </ul>
+        </div>
 
         <button
           className="secondary-button"
           onClick={() => setScreen('petHome')}
-          style={{ width: '100%' }}
+          style={{ width: '100%', marginTop: 8 }}
         >
           Back
         </button>

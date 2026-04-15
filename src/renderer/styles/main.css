@@ -310,6 +310,28 @@ input {
   pointer-events: none;
 }
 
+/* ---------- privacy / about ---------- */
+
+.privacy-section {
+  text-align: left;
+  margin-bottom: 14px;
+}
+
+.privacy-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--purple);
+  margin: 0 0 6px;
+}
+
+.privacy-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
 /* ---------- buttons ---------- */
 
 .secondary-button {
