@@ -38,6 +38,10 @@ export default function PetScreen() {
   const handleFeed = () => {
     setPetEmotion('eat');
     setPetMessage('Yay, thank you for feeding me!');
+    setTimeout(() => {
+      setPetEmotion('happy');
+      setPetMessage('');
+    }, 8000);
   };
 
   const handleHello = () => {
