@@ -44,12 +44,26 @@ export default function PetScreen() {
     }, 8000);
   };
 
+  const greetings = name
+    ? [
+        `Hi ${name}, how's your day going?`,
+        `Hey ${name}! Good to see you~`,
+        `${name}! Hope you're doing well today.`,
+        `Hi ${name}! What are you up to?`,
+        `Hey there ${name}, nice to see you!`,
+        `${name}~ I'm happy you said hi!`,
+      ]
+    : [
+        'Hi! How are you doing?',
+        'Hey there! Nice to see you~',
+        'Hello! Hope your day is going well.',
+        'Hi! Good to see you!',
+      ];
+
   const handleHello = () => {
     setPetEmotion('happy');
     setPetMessage(
-      name
-        ? `Hi ${name}! Your usual active time is ${activeTime || 'not set yet'}.`
-        : 'Hi! Nice to see you again.'
+      greetings[Math.floor(Math.random() * greetings.length)]
     );
   };
 
