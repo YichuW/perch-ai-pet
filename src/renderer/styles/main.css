@@ -163,6 +163,18 @@ input {
   font-size: 18px;
   font-weight: 700;
 }
+.welcome-pet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.welcome-pet-image {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+}
 
 /* ---------- form ---------- */
 
